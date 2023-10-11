@@ -1,29 +1,53 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Text, StyleSheet, SafeAreaView, View, FlatList } from 'react-native';
-import users from '../data/users';
-import { ListItem,Avatar } from '@rneui/themed';
+import { ListItem,Avatar, Icon } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native'; // Importe useNavigation
 import TouchableScale from 'react-native-touchable-scale'; // https://github.com/kohver/react-native-touchable-scale
 import LinearGradient from 'react-native-linear-gradient';
+import { Button } from '@rneui/base';
+import { Alert } from 'react-native';
+import Userscontext from '../context/Userscontexte';
 
 interface User {
   id: number;
   nome: string;
   email: string;
   avatar: string;
+  // Outras propriedades, se houver
+}
+
+interface UsersContextType {
+  state: User[]; // Estrutura do estado do contexto
 }
 
 
+
 const UserList: React.FC = (props:any) => {
+  
+  const {state} =useContext(Userscontext)
+  
+  function confirmUserDeletion(user: User) {
+    Alert.alert ('Excluir Usuário', "Deseja Excluir Usuário?", [
+       {
+        text:'sim',
+        onPress() {
+          console.warn('delete' + user.nome)
+        }
+        
+      },
+      {
+        text: 'Não'
+      } 
+
+    ] )
+  }
+
   function getUserItem({ item }: { item: User }) {
     
     return (
         
         <>
-        <ListItem bottomDivider key={item.id} onPress={()=>props.navigation.navigate('UserForm')}
-        
-       
-        >
+        <ListItem bottomDivider key={item.id} onPress={()=>props.navigation.navigate('UserForm', item)}>
             
             <Avatar
             rounded
@@ -33,7 +57,12 @@ const UserList: React.FC = (props:any) => {
             <ListItem.Title>{item.nome}</ListItem.Title>
             <ListItem.Subtitle>{item.email}</ListItem.Subtitle>
             </ListItem.Content>
-            <ListItem.Chevron color="black" />
+            <Button title='edit' buttonStyle={{borderRadius:50}}
+            onPress={()=> {props.navigation.navigate("UserForm", item)}}
+            />
+            <Button title='Excluir' buttonStyle={{borderRadius:50}}
+            onPress={()=> confirmUserDeletion(item)}
+            />
         </ListItem>
         </>
     )
@@ -43,7 +72,7 @@ const UserList: React.FC = (props:any) => {
     <View>
       <FlatList
         keyExtractor={(user) => user.id.toString()}
-        data={users}
+        data={state.users}
         renderItem={getUserItem}
       />
     </View>
