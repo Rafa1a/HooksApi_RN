@@ -17,21 +17,25 @@ interface User {
 }
 
 interface UsersContextType {
-  state: User[]; // Estrutura do estado do contexto
+  users: User[]; // Estrutura do estado do contexto
 }
 
 
 
 const UserList: React.FC = (props:any) => {
   
-  const {state} =useContext(Userscontext)
+  const {state, dispatch} : {state:UsersContextType, dispatch:any} =useContext(Userscontext)
   
   function confirmUserDeletion(user: User) {
     Alert.alert ('Excluir Usuário', "Deseja Excluir Usuário?", [
        {
         text:'sim',
         onPress() {
-          console.warn('delete' + user.nome)
+          
+          dispatch({
+            type:'deleteUser',
+            payload: user,
+          })
         }
         
       },

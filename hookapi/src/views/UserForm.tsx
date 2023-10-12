@@ -1,15 +1,22 @@
-import React, {useState,useEffect,useReducer} from "react";
+import React, {useState,useEffect,useReducer, useContext} from "react";
 import { Text, StyleSheet, SafeAreaView, View, Button, TextInput } from "react-native";
-
+import Userscontext from '../context/Userscontexte'
 interface User {
     id: number;
     nome: string;
     email: string;
     avatar: string;
+    // Outras propriedades, se houver
   }
-
+  
+  interface UsersContextType {
+    users: User[]; // Estrutura do estado do contexto
+  }
+  
+  
 const UserForm: React.FC<any> = (props) => {
     // console.warn(Object.keys(props.route.params))
+    const {state, dispatch} : {state:UsersContextType, dispatch:any} =useContext(Userscontext)
     const [user, setUser] = useState(props.route.params ? props.route.params : {})
     return (
         <>
@@ -43,6 +50,11 @@ const UserForm: React.FC<any> = (props) => {
         <Button title="salvar"
         
         onPress={() => {
+            dispatch({
+                type:user.id ? 'updateUser' : 'createUser',
+                payload:user
+
+            }),
             props.navigation.goBack()
         }}/>
         </>
